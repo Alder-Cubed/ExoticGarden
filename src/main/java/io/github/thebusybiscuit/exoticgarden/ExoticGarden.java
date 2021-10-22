@@ -152,17 +152,17 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
 
         registerPlant("Red Bell Pepper", ChatColor.RED, PlantType.DOUBLE_PLANT, "65f7810414a2cee2bc1de12ecef7a4c89fc9b38e9d0414a90991241a5863705f");
 
-        registerTree("Oak Apple", "cbb311f3ba1c07c3d1147cd210d81fe11fd8ae9e3db212a0fa748946c3633", "&c", Color.FUCHSIA, "Oak Apple Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Coconut", "6d27ded57b94cf715b048ef517ab3f85bef5a7be69f14b1573e14e7e42e2e8", "&6", Color.MAROON, "Coconut Milk", false, Material.SAND);
-        registerTree("Cherry", "c520766b87d2463c34173ffcd578b0e67d163d37a2d7c2e77915cd91144d40d1", "&c", Color.FUCHSIA, "Cherry Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Pomegranate", "cbb311f3ba1c07c3d1147cd210d81fe11fd8ae9e3db212a0fa748946c3633", "&4", Color.RED, "Pomegranate Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Lemon", "957fd56ca15978779324df519354b6639a8d9bc1192c7c3de925a329baef6c", "&e", Color.YELLOW, "Lemon Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Plum", "69d664319ff381b4ee69a697715b7642b32d54d726c87f6440bf017a4bcd7", "&5", Color.RED, "Plum Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Lime", "5a5153479d9f146a5ee3c9e218f5e7e84c4fa375e4f86d31772ba71f6468", "&a", Color.LIME, "Lime Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Orange", "65b1db547d1b7956d4511accb1533e21756d7cbc38eb64355a2626412212", "&6", Color.ORANGE, "Orange Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Peach", "d3ba41fe82757871e8cbec9ded9acbfd19930d93341cf8139d1dfbfaa3ec2a5", "&5", Color.RED, "Peach Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Pear", "2de28df844961a8eca8efb79ebb4ae10b834c64a66815e8b645aeff75889664b", "&a", Color.LIME, "Pear Juice", true, Material.DIRT, Material.GRASS_BLOCK);
-        registerTree("Dragon Fruit", "847d73a91b52393f2c27e453fb89ab3d784054d414e390d58abd22512edd2b", "&d", Color.FUCHSIA, "Dragon Fruit Juice", true, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Oak Apple", "cbb311f3ba1c07c3d1147cd210d81fe11fd8ae9e3db212a0fa748946c3633", "&c", Color.FUCHSIA, "Oak Apple Juice", true, SaplingType.OAK, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Coconut", "6d27ded57b94cf715b048ef517ab3f85bef5a7be69f14b1573e14e7e42e2e8", "&6", Color.MAROON, "Coconut Milk", false, SaplingType.JUNGLE, Material.SAND);
+        registerTree("Cherry", "c520766b87d2463c34173ffcd578b0e67d163d37a2d7c2e77915cd91144d40d1", "&c", Color.FUCHSIA, "Cherry Juice", true, SaplingType.OAK, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Pomegranate", "cbb311f3ba1c07c3d1147cd210d81fe11fd8ae9e3db212a0fa748946c3633", "&4", Color.RED, "Pomegranate Juice", true, SaplingType.BIRCH, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Lemon", "957fd56ca15978779324df519354b6639a8d9bc1192c7c3de925a329baef6c", "&e", Color.YELLOW, "Lemon Juice", true, SaplingType.OAK, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Plum", "69d664319ff381b4ee69a697715b7642b32d54d726c87f6440bf017a4bcd7", "&5", Color.RED, "Plum Juice", true, SaplingType.SPRUCE, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Lime", "5a5153479d9f146a5ee3c9e218f5e7e84c4fa375e4f86d31772ba71f6468", "&a", Color.LIME, "Lime Juice", true, SaplingType.JUNGLE, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Orange", "65b1db547d1b7956d4511accb1533e21756d7cbc38eb64355a2626412212", "&6", Color.ORANGE, "Orange Juice", true, SaplingType.SPRUCE, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Peach", "d3ba41fe82757871e8cbec9ded9acbfd19930d93341cf8139d1dfbfaa3ec2a5", "&5", Color.RED, "Peach Juice", true, SaplingType.ACACIA, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Pear", "2de28df844961a8eca8efb79ebb4ae10b834c64a66815e8b645aeff75889664b", "&a", Color.LIME, "Pear Juice", true, SaplingType.SPRUCE, Material.DIRT, Material.GRASS_BLOCK);
+        registerTree("Dragon Fruit", "847d73a91b52393f2c27e453fb89ab3d784054d414e390d58abd22512edd2b", "&d", Color.FUCHSIA, "Dragon Fruit Juice", true, SaplingType.JUNGLE, Material.DIRT, Material.GRASS_BLOCK);
 
         FoodRegistry.register(this, miscItemGroup, drinksItemGroup, foodItemGroup);
 
@@ -266,12 +266,12 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
         instance = null;
     }
 
-    private void registerTree(String name, String texture, String color, Color pcolor, String juice, boolean pie, Material... soil) {
+    private void registerTree(String name, String texture, String color, Color pcolor, String juice, boolean pie, SaplingType saplingType, Material... soil) {
         String id = name.toUpperCase(Locale.ROOT).replace(' ', '_');
         Tree tree = new Tree(id, texture, soil);
         trees.add(tree);
 
-        SlimefunItemStack sapling = new SlimefunItemStack(id + "_SAPLING", Material.OAK_SAPLING, color + name + " Sapling");
+        SlimefunItemStack sapling = new SlimefunItemStack(id + "_SAPLING", saplingType.toMaterial(), color + name + " Sapling");
 
         items.put(id + "_SAPLING", sapling);
 
@@ -465,4 +465,22 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
         return "https://github.com/TheBusyBiscuit/ExoticGarden/issues";
     }
 
+    private enum SaplingType {
+        OAK(Material.OAK_SAPLING),
+        DARK_OAK(Material.DARK_OAK_SAPLING),
+        BIRCH(Material.BIRCH_SAPLING),
+        SPRUCE(Material.SPRUCE_SAPLING),
+        JUNGLE(Material.JUNGLE_SAPLING),
+        ACACIA(Material.ACACIA_SAPLING);
+
+        private final Material saplingMaterial;
+
+        SaplingType(Material saplingMaterial) {
+            this.saplingMaterial = saplingMaterial;
+        }
+
+        public Material toMaterial() {
+            return saplingMaterial;
+        }
+    }
 }
