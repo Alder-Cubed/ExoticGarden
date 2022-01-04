@@ -316,11 +316,13 @@ public class PlantsListener implements Listener {
                 }
             }
             else {
-                ItemStack item = ExoticGarden.harvestPlant(e.getBlock());
+                ItemStack[] item = ExoticGarden.harvestPlant(e.getBlock());
 
-                if (item != null) {
+                if (item != null && item.length > 0) {
                     e.setCancelled(true);
-                    e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), item);
+                    for (ItemStack s : item)
+                        if (s != null)
+                            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), s);
                 }
             }
         }
@@ -360,11 +362,13 @@ public class PlantsListener implements Listener {
         if (e.getPlayer().isSneaking()) return;
 
         if (Slimefun.getProtectionManager().hasPermission(e.getPlayer(), e.getClickedBlock().getLocation(), Interaction.BREAK_BLOCK)) {
-            ItemStack item = ExoticGarden.harvestPlant(e.getClickedBlock());
+            ItemStack[] item = ExoticGarden.harvestPlant(e.getClickedBlock());
 
-            if (item != null) {
+            if (item != null && item.length > 0) {
                 e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
-                e.getClickedBlock().getWorld().dropItemNaturally(e.getClickedBlock().getLocation(), item);
+                for (ItemStack s : item)
+                    if (s != null)
+                        e.getClickedBlock().getWorld().dropItemNaturally(e.getClickedBlock().getLocation(), s);
             } else {
                 // The block wasn't a plant, we try harvesting a fruit instead
                 ExoticGarden.getInstance().harvestFruit(e.getClickedBlock());
@@ -400,11 +404,13 @@ public class PlantsListener implements Listener {
         Set<Block> blocksToRemove = new HashSet<>();
 
         for (Block block : blockList) {
-            ItemStack item = ExoticGarden.harvestPlant(block);
+            ItemStack item[] = ExoticGarden.harvestPlant(block);
 
-            if (item != null) {
+            if (item != null && item.length > 0) {
                 blocksToRemove.add(block);
-                block.getWorld().dropItemNaturally(block.getLocation(), item);
+                for (ItemStack s : item)
+                    if (s != null)
+                        block.getWorld().dropItemNaturally(block.getLocation(), s);
             }
         }
 

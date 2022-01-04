@@ -51,14 +51,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
@@ -151,6 +144,8 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
         registerPlant("Pineapple", ChatColor.GOLD, PlantType.DOUBLE_PLANT, "d7eddd82e575dfd5b7579d89dcd2350c991f0483a7647cffd3d2c587f21");
 
         registerPlant("Red Bell Pepper", ChatColor.RED, PlantType.DOUBLE_PLANT, "65f7810414a2cee2bc1de12ecef7a4c89fc9b38e9d0414a90991241a5863705f");
+
+        registerPlant("Cantaloupe", ChatColor.GOLD, PlantType.FRUIT, "fb14cba0f42a2d138ed243b3bff99cb1ea8cbdcd94fb5fb1e3a307f8e21ab1c");
 
         registerTree("Oak Apple", "cbb311f3ba1c07c3d1147cd210d81fe11fd8ae9e3db212a0fa748946c3633", "&c", Color.FUCHSIA, "Oak Apple Juice", true, SaplingType.OAK, Material.DIRT, Material.GRASS_BLOCK);
         registerTree("Coconut", "6d27ded57b94cf715b048ef517ab3f85bef5a7be69f14b1573e14e7e42e2e8", "&6", Color.MAROON, "Coconut Milk", false, SaplingType.JUNGLE, Material.SAND);
@@ -381,7 +376,7 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
     }
 
     @Nullable
-    public static ItemStack harvestPlant(@Nonnull Block block) {
+    public static ItemStack[] harvestPlant(@Nonnull Block block) {
         SlimefunItem item = BlockStorage.check(block);
 
         if (item == null) {
@@ -390,6 +385,7 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
 
         for (Berry berry : getBerries()) {
             if (item.getId().equalsIgnoreCase(berry.getID())) {
+                ItemStack bush = getItem(berry.toBush());
                 switch (berry.getType()) {
                     case ORE_PLANT:
                     case DOUBLE_PLANT:
@@ -407,14 +403,16 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
 
                         plant.setType(Material.OAK_SAPLING);
                         BlockStorage.deleteLocationInfoUnsafely(plant.getLocation(), false);
-                        BlockStorage.store(plant, getItem(berry.toBush()));
-                        return berry.getItem().clone();
+                        BlockStorage.store(plant, bush);
+                        break;
                     default:
                         block.setType(Material.OAK_SAPLING);
                         BlockStorage.deleteLocationInfoUnsafely(block.getLocation(), false);
-                        BlockStorage.store(block, getItem(berry.toBush()));
-                        return berry.getItem().clone();
+                        BlockStorage.store(block, bush);
+                        break;
                 }
+                Random r = new Random();
+                return new ItemStack[]{berry.getItem().clone(), r.nextBoolean() ? bush : null};
             }
         }
 
