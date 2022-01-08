@@ -16,8 +16,10 @@ import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.block.data.type.Bamboo;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -150,7 +152,8 @@ public class PlantsListener implements Listener {
     }
 
     private void growStructure(StructureGrowEvent e) {
-        SlimefunItem item = BlockStorage.check(e.getLocation().getBlock());
+        Block block = e.getLocation().getBlock();
+        SlimefunItem item = BlockStorage.check(block);
 
         if (item != null) {
             e.setCancelled(true);
@@ -164,13 +167,13 @@ public class PlantsListener implements Listener {
 
             for (Berry berry : ExoticGarden.getBerries()) {
                 if (item.getId().equalsIgnoreCase(berry.toBush())) {
+                    Block blockAbove = block.getRelative(BlockFace.UP);
                     switch (berry.getType()) {
                     case BUSH:
-                        e.getLocation().getBlock().setType(Material.OAK_LEAVES);
+                        block.setType(Material.OAK_LEAVES);
                         break;
                     case ORE_PLANT:
                     case DOUBLE_PLANT:
-                        Block blockAbove = e.getLocation().getBlock().getRelative(BlockFace.UP);
                         item = BlockStorage.check(blockAbove);
                         if (item != null) return;
 
@@ -186,7 +189,7 @@ public class PlantsListener implements Listener {
                         }
 
                         BlockStorage.store(blockAbove, berry.getItem());
-                        e.getLocation().getBlock().setType(Material.OAK_LEAVES);
+                        block.setType(Material.OAK_LEAVES);
                         blockAbove.setType(Material.PLAYER_HEAD);
                         Rotatable rotatable = (Rotatable) blockAbove.getBlockData();
                         rotatable.setRotation(faces[ThreadLocalRandom.current().nextInt(faces.length)]);
@@ -194,18 +197,64 @@ public class PlantsListener implements Listener {
 
                         PlayerHead.setSkin(blockAbove, PlayerSkin.fromHashCode(berry.getTexture()), true);
                         break;
-                    default:
-                        e.getLocation().getBlock().setType(Material.PLAYER_HEAD);
-                        Rotatable s = (Rotatable) e.getLocation().getBlock().getBlockData();
-                        s.setRotation(faces[ThreadLocalRandom.current().nextInt(faces.length)]);
-                        e.getLocation().getBlock().setBlockData(s);
+                    case TRIPLE_PLANT:
+                        Block blockAbover = blockAbove.getRelative(BlockFace.UP);
+                        item = BlockStorage.check(blockAbover);
+                        if (item != null) return;
 
-                        PlayerHead.setSkin(e.getLocation().getBlock(), PlayerSkin.fromHashCode(berry.getTexture()), true);
+                        if (!Tag.SAPLINGS.isTagged(blockAbover.getType()) && !Tag.LEAVES.isTagged(blockAbover.getType())) {
+                            switch (blockAbover.getType()) {
+                                case AIR:
+                                case CAVE_AIR:
+                                case SNOW:
+                                    break;
+                                default:
+                                    return;
+                            }
+                        }
+
+                        if (!Tag.SAPLINGS.isTagged(blockAbove.getType()) && !Tag.LEAVES.isTagged(blockAbove.getType())) {
+                            switch (blockAbove.getType()) {
+                                case AIR:
+                                case CAVE_AIR:
+                                case SNOW:
+                                    break;
+                                default:
+                                    return;
+                            }
+                        }
+
+                        BlockStorage.store(blockAbover, berry.getItem());
+                        block.setType(Material.BAMBOO);
+                        Bamboo blockData = (Bamboo) block.getBlockData();
+                        blockData.setLeaves(Bamboo.Leaves.SMALL);
+                        block.setBlockData(blockData);
+
+                        blockAbove.setType(Material.BAMBOO);
+                        Bamboo blockAboveData = (Bamboo) block.getBlockData();
+                        blockAboveData.setLeaves(Bamboo.Leaves.LARGE);
+                        blockAbove.setBlockData(blockAboveData);
+
+                        blockAbover.setType(Material.PLAYER_HEAD);
+                        Rotatable headData = (Rotatable) blockAbover.getBlockData();
+                        headData.setRotation(faces[ThreadLocalRandom.current().nextInt(faces.length)]);
+                        blockAbover.setBlockData(headData);
+
+                        PlayerHead.setSkin(blockAbover, PlayerSkin.fromHashCode(berry.getTexture()), true);
+
+                        break;
+                    default:
+                        block.setType(Material.PLAYER_HEAD);
+                        Rotatable s = (Rotatable) block.getBlockData();
+                        s.setRotation(faces[ThreadLocalRandom.current().nextInt(faces.length)]);
+                        block.setBlockData(s);
+
+                        PlayerHead.setSkin(block, PlayerSkin.fromHashCode(berry.getTexture()), true);
                         break;
                     }
 
                     BlockStorage.deleteLocationInfoUnsafely(e.getLocation(), false);
-                    BlockStorage.store(e.getLocation().getBlock(), berry.getItem());
+                    BlockStorage.store(block, berry.getItem());
                     e.getWorld().playEffect(e.getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
                     break;
                 }
@@ -266,15 +315,38 @@ public class PlantsListener implements Listener {
                     }
                     else {
                         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                            BlockStorage.store(current.getRelative(BlockFace.UP), berry.getItem());
+                            Block upperBlock = current.getRelative(BlockFace.UP);
+                            BlockStorage.store(upperBlock, berry.getItem());
                             current.setType(Material.OAK_LEAVES);
-                            current.getRelative(BlockFace.UP).setType(Material.PLAYER_HEAD);
-                            Rotatable ss = (Rotatable) current.getRelative(BlockFace.UP).getBlockData();
+                            upperBlock.setType(Material.PLAYER_HEAD);
+                            Rotatable ss = (Rotatable) upperBlock.getBlockData();
                             ss.setRotation(faces[random.nextInt(faces.length)]);
-                            current.getRelative(BlockFace.UP).setBlockData(ss);
-                            PlayerHead.setSkin(current.getRelative(BlockFace.UP), PlayerSkin.fromHashCode(berry.getTexture()), true);
+                            upperBlock.setBlockData(ss);
+                            PlayerHead.setSkin(upperBlock, PlayerSkin.fromHashCode(berry.getTexture()), true);
                         });
                     }
+                    break;
+                case TRIPLE_PLANT:
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        Block upperBlock = current.getRelative(BlockFace.UP).getRelative(BlockFace.UP);
+                        BlockStorage.store(upperBlock, berry.getItem());
+
+                        current.setType(Material.BAMBOO);
+                        Bamboo bamboo1 = (Bamboo) current.getBlockData();
+                        bamboo1.setLeaves(Bamboo.Leaves.SMALL);
+                        current.setBlockData(bamboo1);
+
+                        current.getRelative(BlockFace.UP).setType(Material.BAMBOO);
+                        Bamboo bamboo2 = (Bamboo) current.getBlockData();
+                        bamboo2.setLeaves(Bamboo.Leaves.LARGE);
+                        current.setBlockData(bamboo2);
+
+                        upperBlock.setType(Material.PLAYER_HEAD);
+                        Rotatable ss = (Rotatable) upperBlock.getBlockData();
+                        ss.setRotation(faces[random.nextInt(faces.length)]);
+                        upperBlock.setBlockData(ss);
+                        PlayerHead.setSkin(upperBlock, PlayerSkin.fromHashCode(berry.getTexture()), true);
+                    });
                     break;
                 default:
                     break;

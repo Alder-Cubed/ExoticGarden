@@ -140,7 +140,7 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
         registerPlant("Cilantro", ChatColor.GREEN, PlantType.DOUBLE_PLANT, "16149196f3a8d6d6f24e51b27e4cb71c6bab663449daffb7aa211bbe577242");
         registerPlant("Black Pepper", ChatColor.DARK_GRAY, PlantType.DOUBLE_PLANT, "2342b9bf9f1f6295842b0efb591697b14451f803a165ae58d0dcebd98eacc");
 
-        registerPlant("Corn", ChatColor.GOLD, PlantType.DOUBLE_PLANT, "9bd3802e5fac03afab742b0f3cca41bcd4723bee911d23be29cffd5b965f1");
+        registerPlant("Corn", ChatColor.GOLD, PlantType.TRIPLE_PLANT, "9bd3802e5fac03afab742b0f3cca41bcd4723bee911d23be29cffd5b965f1");
         registerPlant("Pineapple", ChatColor.GOLD, PlantType.DOUBLE_PLANT, "d7eddd82e575dfd5b7579d89dcd2350c991f0483a7647cffd3d2c587f21");
 
         registerPlant("Red Bell Pepper", ChatColor.RED, PlantType.DOUBLE_PLANT, "65f7810414a2cee2bc1de12ecef7a4c89fc9b38e9d0414a90991241a5863705f");
@@ -386,11 +386,11 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
         for (Berry berry : getBerries()) {
             if (item.getId().equalsIgnoreCase(berry.getID())) {
                 ItemStack bush = getItem(berry.toBush());
+
+                Block plant = block;
                 switch (berry.getType()) {
                     case ORE_PLANT:
                     case DOUBLE_PLANT:
-                        Block plant = block;
-
                         if (Tag.LEAVES.isTagged(block.getType())) {
                             block = block.getRelative(BlockFace.UP);
                         } else {
@@ -404,6 +404,22 @@ public class ExoticGarden extends JavaPlugin implements SlimefunAddon {
                         plant.setType(Material.OAK_SAPLING);
                         BlockStorage.deleteLocationInfoUnsafely(plant.getLocation(), false);
                         BlockStorage.store(plant, bush);
+                        break;
+                    case TRIPLE_PLANT:
+                        while (block.getType() != Material.PLAYER_HEAD) {
+                            block = block.getRelative(BlockFace.UP);
+                        }
+                        plant = block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN);
+
+                        BlockStorage.deleteLocationInfoUnsafely(block.getLocation(), false);
+                        block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
+                        block.setType(Material.AIR);
+                        block.getRelative(BlockFace.DOWN).setType(Material.AIR);
+
+                        plant.setType(Material.OAK_SAPLING);
+                        BlockStorage.deleteLocationInfoUnsafely(plant.getLocation(), false);
+                        BlockStorage.store(plant, bush);
+
                         break;
                     default:
                         block.setType(Material.OAK_SAPLING);
